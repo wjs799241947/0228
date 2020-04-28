@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+	
+	<!-- 配置controller扫描器，扫描@controller注解，多个包之间使用逗号分隔 -->
+	<context:component-scan base-package="cn.softeem.xzms.controller" />
+	
+	<!-- 配置注解式处理器映射器 :对类中标记@RequestMapping的方法进行映射，根据RequestMapping定义的URL匹配RequestMapping标记的方法-->
+<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"></bean>
+	
+
+	
+	
+	 
+	 <!-- 配置视图解析：ViewResolver -->
+	 <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	  <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+	  <property name="prefix" value="/WEB-INF/"></property>
+	  <property name="suffix" value=".jsp"></property>
+	 </bean>
+	 
+	
+
+	
+	
+	
+	<!-- 字符转换成日期 -->
+	<bean id="conversionService"
+		class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+		<property name="converters">
+			<list>
+				<bean class="cn.softeem.xzms.utils.CustomDateConverter"></bean>
+			</list>
+		</property>
+	</bean> 
+	
+	
+	 <!-- 配置注解式处理器适配器 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="webBindingInitializer" ref="customBinder"></property>
+		
+	    <!-- json转换器 -->
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
+			</list>
+		</property>
+	</bean>
+	<bean id="customBinder" 
+			class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+		<property name="conversionService" ref="conversionService"></property>
+	</bean>
+	 
+	 
+	<!-- 配置自定义异常处理器 -->
+<!-- 	<bean id="handlerExceptionResolver" class="cn.softeem.exception.CustomExceptionresolver"></bean> -->
+	 
+	 <!-- 文件上传解析器 -->
+	<bean id="multipartResolver"
+			class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置上传文件的最大容量为 5M -->
+		<property name="maxUploadSize">
+			<value>5242880</value>
+		</property>
+	</bean>
+	 
+	 <!-- <mvc:interceptors>
+		登录拦截
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="cn.softeem.contorller.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+	 
+</beans>
